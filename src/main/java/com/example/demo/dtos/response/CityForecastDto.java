@@ -12,7 +12,7 @@ public class CityForecastDto {
     private double lon;
     private String timezone;
     private int timezone_offset;
-    private List<DailyForecastUnixDto> daily;
+    private List<DailyForecastWithUnixDto> daily;
 
     public CityForecastDto() {
     }

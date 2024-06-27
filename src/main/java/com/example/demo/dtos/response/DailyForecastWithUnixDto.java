@@ -4,15 +4,14 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
-
 @Getter
 @Setter
-public class DailyForecastDateDto {
-    private String dt;
-    private String sunrise;
-    private String sunset;
-    private String moonrise;
-    private String moonset;
+public class DailyForecastWithUnixDto {
+    private long dt;
+    private long sunrise;
+    private long sunset;
+    private long moonrise;
+    private long moonset;
     private double moon_phase;
     private String summary;
     private TemperatureDto temp;
@@ -29,7 +28,6 @@ public class DailyForecastDateDto {
     private double rain;
     private double uvi;
 
-    public DailyForecastDateDto() {
-
+    public DailyForecastWithUnixDto() {
     }
 }

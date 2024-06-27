@@ -4,8 +4,8 @@ import com.example.demo.client.OpenWeatherApiRemoteService;
 import com.example.demo.data.City;
 import com.example.demo.dtos.response.CityForecastDto;
 import com.example.demo.dtos.response.CityInfoDto;
-import com.example.demo.dtos.response.DailyForecastDateDto;
-import com.example.demo.dtos.response.DailyForecastUnixDto;
+import com.example.demo.dtos.response.DailyForecastWithDateDto;
+import com.example.demo.dtos.response.DailyForecastWithUnixDto;
 import com.example.demo.exceptions.CityAlreadyRegisteredException;
 import com.example.demo.exceptions.CityNotFoundException;
 import com.example.demo.mapper.CityMapper;
@@ -74,14 +74,16 @@ public class CityService {
 
         // Get city forecast weather
         String cityForecastUrl = city.get().getForecastLink();
-        List<DailyForecastUnixDto> dailyForecastUnixDtos = openWeatherApiRemoteService.getCityForecast(cityForecastUrl, cityName).getDaily();
+        List<DailyForecastWithUnixDto> dailyForecastUnixList = openWeatherApiRemoteService.getCityForecast(cityForecastUrl, cityName).getDaily();
 
-        List<DailyForecastDateDto> a = cityMapper.toDailyForecastDateDtos(dailyForecastUnixDtos);
+        // Convert Unix timestamps into dates
+        List<DailyForecastWithDateDto> dailyForecastDateList = cityMapper.toDailyForecastDateDtos(dailyForecastUnixList);
 
-        Map b = createMapWithDateAsKey(a);
+        // Create map and list of forecast dates in order to obtain desired days
+        Map dailyForecastMap  = createMapWithDateAsKey(dailyForecastDateList);
+        List<String> forecastDates = getNextDays(days);
 
-        List<String> c = getNextDays(days);
-        return matchDatesWithMap(b, c);
+        return matchForecastDatesWithForecastMap(dailyForecastMap, forecastDates);
     }
 
     private Map<String, Double> getCityCoordinatesMap(List<CityInfoDto> cities) {
@@ -99,7 +101,7 @@ public class CityService {
     private boolean isCityAlreadyRegistered(String name) {
         return cityRepository.existsByName(name);
     }
-    public static List<Object> matchDatesWithMap(Map<String, Object> b, List<String> c) {
+    public static List<Object> matchForecastDatesWithForecastMap(Map<String, Object> b, List<String> c) {
         List<Object> matchedObjects = new ArrayList<>();
 
         for (String date : c) {
@@ -110,5 +112,4 @@ public class CityService {
 
         return matchedObjects;
     }
-
 }

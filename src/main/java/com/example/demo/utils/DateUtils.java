@@ -1,8 +1,7 @@
 package com.example.demo.utils;
 
-import com.example.demo.dtos.response.DailyForecastDateDto;
+import com.example.demo.dtos.response.DailyForecastWithDateDto;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -30,10 +29,10 @@ public class DateUtils {
         return dates;
     }
 
-    public static Map<String, DailyForecastDateDto> createMapWithDateAsKey(List<DailyForecastDateDto> forecasts) {
-        Map<String, DailyForecastDateDto> forecastMap = new HashMap<>();
+    public static Map<String, DailyForecastWithDateDto> createMapWithDateAsKey(List<DailyForecastWithDateDto> forecasts) {
+        Map<String, DailyForecastWithDateDto> forecastMap = new HashMap<>();
 
-        for (DailyForecastDateDto forecast : forecasts) {
+        for (DailyForecastWithDateDto forecast : forecasts) {
             forecastMap.put(forecast.getDt(), forecast);
         }
         return forecastMap;
