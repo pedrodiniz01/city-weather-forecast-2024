@@ -1,7 +1,7 @@
 package com.example.demo.mapper;
 
 import com.example.demo.data.City;
-import com.example.demo.dtos.RegisterCityDto;
+import com.example.demo.dtos.request.RegisterCityDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

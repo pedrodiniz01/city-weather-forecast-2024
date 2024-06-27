@@ -1,6 +1,5 @@
-package com.example.demo.dtos;
+package com.example.demo.dtos.request;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
