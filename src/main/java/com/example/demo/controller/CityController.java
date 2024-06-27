@@ -31,7 +31,7 @@ public class CityController {
             cityService.registerCity(dto.getName());
         }
         catch (InvalidApiResponseException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid Request.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(String.format("City '%s' registered successfully.", dto.getName()));
         }
         return ResponseEntity.status(HttpStatus.CREATED).body("City Created.");
     }

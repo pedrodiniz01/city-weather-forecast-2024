@@ -1,20 +1,20 @@
 package com.example.demo.client;
 
+import com.example.demo.constants.ApiConstants;
+import com.example.demo.dtos.response.CityForecastDto;
 import com.example.demo.dtos.response.CityInfoDto;
 import com.example.demo.exceptions.InvalidApiResponseException;
+import com.example.demo.utils.UrlUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.Instant;
 import java.util.List;
 
+import static com.example.demo.constants.ApiConstants.*;
+
 @Service
 public class OpenWeatherApiRemoteService {
-
-    private final String cityInfoUrl = "http://api.openweathermap.org/geo/1.0/direct";
-    private final String cityInfoApiKey = "b8a62f6cd8354cf606bce6e9f2987e82";
-    private final String cityForecastUrl = "https://api.openweathermap.org/data/3.0/onecall";
-    private final String cityForecastApiKey = "d450c64ee02b2fd15f6b1b9c628b7660";
     private final WebClient webClient;
 
     public OpenWeatherApiRemoteService(WebClient.Builder webClientBuilder) {
@@ -22,9 +22,9 @@ public class OpenWeatherApiRemoteService {
     }
 
     public List<CityInfoDto> getCityInfo(String cityName) {
-        String url = cityInfoUrl
-                + "?q=" + cityName
-                + "&appid=" + cityInfoApiKey;
+        String url = ApiConstants.CITY_INFO_URL
+                + CITY_NAME_PARAM + cityName
+                + API_KEY_PARAM + CITY_INFO_API_KEY;
 
         try {
             List<CityInfoDto> cityInfoList = webClient.get()
@@ -35,30 +35,24 @@ public class OpenWeatherApiRemoteService {
                     .block();
             return cityInfoList;
         } catch (RuntimeException e) {
-            throw new InvalidApiResponseException("Open Weather API - City Info", e.getMessage());
+            throw new InvalidApiResponseException("Open Weather - City Info", e.getMessage(), cityName);
         }
     }
 
-    public List<CityInfoDto> getCityForecast(double latitude, double longitude) {
+    public CityForecastDto getCityForecast(double latitude, double longitude, String cityName) {
         long currentUnixTimestamp = Instant.now().getEpochSecond();
 
-        String url = cityForecastUrl
-                + "?lat=" + latitude
-                + "&lon=" + longitude
-                + "&appid=" + cityForecastApiKey
-                + "&date=" + currentUnixTimestamp
-                + "&exclude=minutely,hourly,current";
+        String url = UrlUtils.createCityForecastUrl(latitude, longitude, currentUnixTimestamp);
 
         try {
-            List<CityInfoDto> cityInfoList = webClient.get()
+            CityForecastDto cityForecastDto = webClient.get()
                     .uri(url)
                     .retrieve()
-                    .bodyToFlux(CityInfoDto.class)
-                    .collectList()
+                    .bodyToMono(CityForecastDto.class)
                     .block();
-            return cityInfoList;
+            return cityForecastDto;
         } catch (RuntimeException e) {
-            throw new InvalidApiResponseException("Open Weather API - One Call", e.getMessage());
+            throw new InvalidApiResponseException("Open Weather API - Forecast", e.getMessage(), cityName);
         }
     }
 }

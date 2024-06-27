@@ -9,10 +9,13 @@ public class InvalidApiResponseException extends RuntimeException {
 
     private final String api;
     private final String reason;
+    private final String additionalInfo;
 
-    public InvalidApiResponseException(String api, String reason) {
+
+    public InvalidApiResponseException(String api, String reason, String additionalInfo) {
         super();
         this.api = api;
         this.reason = reason;
+        this.additionalInfo = additionalInfo;
     }
 }
