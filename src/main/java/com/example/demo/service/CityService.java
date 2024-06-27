@@ -2,26 +2,32 @@ package com.example.demo.service;
 
 import com.example.demo.client.OpenWeatherApiRemoteService;
 import com.example.demo.data.City;
+import com.example.demo.dtos.response.CityForecastDto;
 import com.example.demo.dtos.response.CityInfoDto;
+import com.example.demo.dtos.response.DailyForecastDateDto;
+import com.example.demo.dtos.response.DailyForecastUnixDto;
 import com.example.demo.exceptions.CityAlreadyRegisteredException;
-import com.example.demo.exceptions.InvalidApiResponseException;
+import com.example.demo.exceptions.CityNotFoundException;
+import com.example.demo.mapper.CityMapper;
 import com.example.demo.repository.CityRepository;
 import com.example.demo.utils.UrlUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
+import static com.example.demo.utils.DateUtils.createMapWithDateAsKey;
+import static com.example.demo.utils.DateUtils.getNextDays;
 import static com.example.demo.utils.ValidationUtils.validateApiResponseList;
 
 @Service
 public class CityService {
     @Autowired
     private CityRepository cityRepository;
+
+    @Autowired
+    private CityMapper cityMapper;
+
     @Autowired
     OpenWeatherApiRemoteService openWeatherApiRemoteService;
 
@@ -33,7 +39,8 @@ public class CityService {
         }
 
         // Get city coordinates
-        List<CityInfoDto> cityInfoDtoList = openWeatherApiRemoteService.getCityInfo(cityName);
+        String cityInfoUrl = UrlUtils.createCityInfoUrl(cityName);
+        List<CityInfoDto> cityInfoDtoList = openWeatherApiRemoteService.getCityInfo(cityInfoUrl, cityName);
 
         // Validate API response
         validateApiResponseList(cityInfoDtoList);
@@ -42,14 +49,39 @@ public class CityService {
         Map<String, Double> cityCoordinates = getCityCoordinatesMap(cityInfoDtoList);
 
         // Create Url
-        String url = UrlUtils.createCityForecastUrl(cityCoordinates.get("latitude"), cityCoordinates.get("longitude"), Instant.now().getEpochSecond());
+        String cityForecastUrl = UrlUtils.createCityForecastUrl(cityCoordinates.get("latitude"), cityCoordinates.get("longitude"));
 
         City city = City.builder()
                 .name(cityName)
-                .forecastLink(url)
+                .forecastLink(cityForecastUrl)
                 .build();
 
         return cityRepository.save(city);
+    }
+
+    public List<City> getAllCities() {
+         return cityRepository.findAll();
+    }
+
+    public List<CityForecastDto> getCityForecast(String cityName, int days) {
+
+        // Validate if city is registered
+        Optional<City> city = cityRepository.findByName(cityName);
+
+        if (city.isEmpty()) {
+            throw new CityNotFoundException();
+        }
+
+        // Get city forecast weather
+        String cityForecastUrl = city.get().getForecastLink();
+        List<DailyForecastUnixDto> dailyForecastUnixDtos = openWeatherApiRemoteService.getCityForecast(cityForecastUrl, cityName).getDaily();
+
+        List<DailyForecastDateDto> a = cityMapper.toDailyForecastDateDtos(dailyForecastUnixDtos);
+
+        Map b = createMapWithDateAsKey(a);
+
+        List<String> c = getNextDays(days);
+        return matchDatesWithMap(b, c);
     }
 
     private Map<String, Double> getCityCoordinatesMap(List<CityInfoDto> cities) {
@@ -67,4 +99,16 @@ public class CityService {
     private boolean isCityAlreadyRegistered(String name) {
         return cityRepository.existsByName(name);
     }
+    public static List<Object> matchDatesWithMap(Map<String, Object> b, List<String> c) {
+        List<Object> matchedObjects = new ArrayList<>();
+
+        for (String date : c) {
+            if (b.containsKey(date)) {
+                matchedObjects.add(b.get(date));
+            }
+        }
+
+        return matchedObjects;
+    }
+
 }

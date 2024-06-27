@@ -1,6 +1,5 @@
 package com.example.demo.client;
 
-import com.example.demo.constants.ApiConstants;
 import com.example.demo.dtos.response.CityForecastDto;
 import com.example.demo.dtos.response.CityInfoDto;
 import com.example.demo.exceptions.InvalidApiResponseException;
@@ -8,10 +7,7 @@ import com.example.demo.utils.UrlUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.time.Instant;
 import java.util.List;
-
-import static com.example.demo.constants.ApiConstants.*;
 
 @Service
 public class OpenWeatherApiRemoteService {
@@ -21,10 +17,7 @@ public class OpenWeatherApiRemoteService {
         this.webClient = webClientBuilder.build();
     }
 
-    public List<CityInfoDto> getCityInfo(String cityName) {
-        String url = ApiConstants.CITY_INFO_URL
-                + CITY_NAME_PARAM + cityName
-                + API_KEY_PARAM + CITY_INFO_API_KEY;
+    public List<CityInfoDto> getCityInfo(String url, String cityName) {
 
         try {
             List<CityInfoDto> cityInfoList = webClient.get()
@@ -39,10 +32,7 @@ public class OpenWeatherApiRemoteService {
         }
     }
 
-    public CityForecastDto getCityForecast(double latitude, double longitude, String cityName) {
-        long currentUnixTimestamp = Instant.now().getEpochSecond();
-
-        String url = UrlUtils.createCityForecastUrl(latitude, longitude, currentUnixTimestamp);
+    public CityForecastDto getCityForecast(String url, String cityName) {
 
         try {
             CityForecastDto cityForecastDto = webClient.get()
