@@ -82,10 +82,10 @@ public class CityService {
         List<DailyForecastWithDateDto> dailyForecastDateList = cityMapper.toDailyForecastDateDtos(dailyForecastUnixList);
 
         // Create map and list of forecast dates in order to obtain desired days
-        Map dailyForecastMap  = createMapWithDateAsKey(dailyForecastDateList);
-        List<String> forecastDates = getNextDays(days);
+        Map dailyForecastMap = createMapWithDateAsKey(dailyForecastDateList);
+        List<String> desiredDays = getNextDays(days);
 
-        return matchForecastDatesWithForecastMap(dailyForecastMap, forecastDates);
+        return matchDesiredDaysWithForecastMap(dailyForecastMap, desiredDays);
     }
 
     private Map<String, Double> getCityCoordinatesMap(List<CityInfoDto> cities) {
@@ -103,7 +103,7 @@ public class CityService {
     private boolean isCityAlreadyRegistered(String name) {
         return cityRepository.existsByName(name);
     }
-    public static List<Object> matchForecastDatesWithForecastMap(Map<String, Object> b, List<String> c) {
+    public static List<Object> matchDesiredDaysWithForecastMap(Map<String, Object> b, List<String> c) {
         List<Object> matchedObjects = new ArrayList<>();
 
         for (String date : c) {
