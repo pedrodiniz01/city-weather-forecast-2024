@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import static com.example.demo.utils.ValidationUtils.validateApiResponseList;
+
 @Service
 public class CityService {
     @Autowired
@@ -33,15 +35,14 @@ public class CityService {
         // Get city coordinates
         List<CityInfoDto> cityInfoDtoList = openWeatherApiRemoteService.getCityInfo(cityName);
 
-        // Validate Get City response
-        validateGetCityResponse(cityInfoDtoList);
+        // Validate API response
+        validateApiResponseList(cityInfoDtoList);
 
         // Extract coordinates
         Map<String, Double> cityCoordinates = getCityCoordinatesMap(cityInfoDtoList);
 
         // Create Url
-        long currentUnixTimestamp = Instant.now().getEpochSecond();
-        String url = UrlUtils.createCityForecastUrl(cityCoordinates.get("latitude"), cityCoordinates.get("longitude"), currentUnixTimestamp);
+        String url = UrlUtils.createCityForecastUrl(cityCoordinates.get("latitude"), cityCoordinates.get("longitude"), Instant.now().getEpochSecond());
 
         City city = City.builder()
                 .name(cityName)
@@ -49,18 +50,6 @@ public class CityService {
                 .build();
 
         return cityRepository.save(city);
-    }
-
-    private void validateGetCityResponse(List<CityInfoDto> cityInfoDtoList) {
-        if (Objects.isNull(cityInfoDtoList) || cityInfoDtoList.size() == 0) {
-            throw new InvalidApiResponseException("Open Weather API", "Empty response.", null);
-        }
-    }
-
-    private void validateGetCityForecastResponse(List<CityInfoDto> cityInfoDtoList) {
-        if (Objects.isNull(cityInfoDtoList) || cityInfoDtoList.size() == 0) {
-            throw new InvalidApiResponseException("Open Weather API", "Empty response.", null);
-        }
     }
 
     private Map<String, Double> getCityCoordinatesMap(List<CityInfoDto> cities) {
