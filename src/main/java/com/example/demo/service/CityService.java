@@ -2,8 +2,8 @@ package com.example.demo.service;
 
 import com.example.demo.client.OpenWeatherApiRemoteService;
 import com.example.demo.data.City;
-import com.example.demo.dtos.response.CityForecastDto;
 import com.example.demo.dtos.response.CityInfoDto;
+import com.example.demo.exceptions.CityAlreadyRegisteredException;
 import com.example.demo.exceptions.InvalidApiResponseException;
 import com.example.demo.repository.CityRepository;
 import com.example.demo.utils.UrlUtils;
@@ -25,6 +25,11 @@ public class CityService {
 
     public City registerCity(String cityName) {
 
+        // Validate if city name is already registered
+        if (isCityAlreadyRegistered(cityName)) {
+            throw new CityAlreadyRegisteredException(cityName);
+        }
+
         // Get city coordinates
         List<CityInfoDto> cityInfoDtoList = openWeatherApiRemoteService.getCityInfo(cityName);
 
@@ -38,9 +43,10 @@ public class CityService {
         long currentUnixTimestamp = Instant.now().getEpochSecond();
         String url = UrlUtils.createCityForecastUrl(cityCoordinates.get("latitude"), cityCoordinates.get("longitude"), currentUnixTimestamp);
 
-        City city = new City();
-        city.setName(cityName);
-        city.setForecastLink(url);
+        City city = City.builder()
+                .name(cityName)
+                .forecastLink(url)
+                .build();
 
         return cityRepository.save(city);
     }
@@ -69,4 +75,7 @@ public class CityService {
         return cityCoordinatesMap;
     }
 
+    private boolean isCityAlreadyRegistered(String name) {
+        return cityRepository.existsByName(name);
+    }
 }

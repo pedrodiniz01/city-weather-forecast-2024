@@ -6,8 +6,7 @@ import org.antlr.v4.runtime.misc.NotNull;
 
 @Entity
 @Table(name="City")
-@NoArgsConstructor
-@Setter
+@Builder
 public class City {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
