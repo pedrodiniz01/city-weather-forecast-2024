@@ -42,7 +42,7 @@ public class OpenWeatherApiRemoteService {
                     .block();
             return cityForecastDto;
         } catch (RuntimeException e) {
-            throw new InvalidApiResponseException("Open Weather API - Forecast", e.getMessage(), cityName);
+            throw new InvalidApiResponseException("Open Weather API - Forecast Info", e.getMessage(), cityName);
         }
     }
 }

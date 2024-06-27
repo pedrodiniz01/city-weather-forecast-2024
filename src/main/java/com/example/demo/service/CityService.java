@@ -45,14 +45,16 @@ public class CityService {
         // Validate API response
         validateApiResponseList(cityInfoDtoList);
 
-        // Extract coordinates
+        // Extract relevant data
         Map<String, Double> cityCoordinates = getCityCoordinatesMap(cityInfoDtoList);
+        String country = cityInfoDtoList.get(0).getCountry();
 
         // Create Url
         String cityForecastUrl = UrlUtils.createCityForecastUrl(cityCoordinates.get("latitude"), cityCoordinates.get("longitude"));
 
         City city = City.builder()
                 .name(cityName)
+                .country(country)
                 .forecastLink(cityForecastUrl)
                 .build();
 
@@ -109,7 +111,6 @@ public class CityService {
                 matchedObjects.add(b.get(date));
             }
         }
-
         return matchedObjects;
     }
 }
