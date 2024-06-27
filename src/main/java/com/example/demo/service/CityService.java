@@ -14,7 +14,7 @@ public class CityService {
     public City registerCity(String cityName) {
         City city = new City();
         city.setName(cityName);
-       return cityRepository.save(city);
+        return cityRepository.save(city);
     }
 
 }
