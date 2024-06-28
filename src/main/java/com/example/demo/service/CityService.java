@@ -32,7 +32,6 @@ public class CityService {
     OpenWeatherApiRemoteService openWeatherApiRemoteService;
 
     public City registerCity(String cityName) {
-
         // Validate if city name is already registered
         if (isCityAlreadyRegistered(cityName)) {
             throw new CityAlreadyRegisteredException(cityName);
@@ -46,10 +45,10 @@ public class CityService {
         validateApiResponseList(cityInfoDtoList);
 
         // Extract relevant data
-        Map<String, Double> cityCoordinates = getCityCoordinatesMap(cityInfoDtoList);
+        Map<String, Double> cityCoordinates = extractCityCoordinates(cityInfoDtoList);
         String country = cityInfoDtoList.get(0).getCountry();
 
-        // Create Url
+        // Create Url for city forecast
         String cityForecastUrl = UrlUtils.createCityForecastUrl(cityCoordinates.get("latitude"), cityCoordinates.get("longitude"));
 
         City city = City.builder()
@@ -66,29 +65,26 @@ public class CityService {
     }
 
     public List<CityForecastDto> getCityForecast(String cityName, int days) {
-
         // Validate if city is registered
-        Optional<City> city = cityRepository.findByName(cityName);
-
-        if (city.isEmpty()) {
-            throw new CityNotFoundException();
-        }
+        City city = cityRepository.findByName(cityName).orElseThrow(CityNotFoundException::new);
 
         // Get city forecast weather
-        String cityForecastUrl = city.get().getForecastLink();
+        String cityForecastUrl = city.getForecastLink();
         List<DailyForecastWithUnixDto> dailyForecastUnixList = openWeatherApiRemoteService.getCityForecast(cityForecastUrl, cityName).getDaily();
 
         // Convert Unix timestamps into dates
         List<DailyForecastWithDateDto> dailyForecastDateList = cityMapper.toDailyForecastDateDtos(dailyForecastUnixList);
 
-        // Create map and list of forecast dates in order to obtain desired days
+        // Create map with date as key for easy lookup
         Map dailyForecastMap = createMapWithDateAsKey(dailyForecastDateList);
+
+        // Get list of desired days as strings
         List<String> desiredDays = getDesiredDays(days);
 
         return matchDesiredDaysWithForecastMap(dailyForecastMap, desiredDays);
     }
 
-    private Map<String, Double> getCityCoordinatesMap(List<CityInfoDto> cities) {
+    private Map<String, Double> extractCityCoordinates(List<CityInfoDto> cities) {
         Map<String, Double> cityCoordinatesMap = new HashMap<>();
 
         if (!cities.isEmpty()) {
@@ -103,14 +99,14 @@ public class CityService {
     private boolean isCityAlreadyRegistered(String name) {
         return cityRepository.existsByName(name);
     }
-    public static List<Object> matchDesiredDaysWithForecastMap(Map<String, Object> b, List<String> c) {
-        List<Object> matchedObjects = new ArrayList<>();
+    public static List<Object> matchDesiredDaysWithForecastMap(Map<String, Object> forecastMap, List<String> desiredDays) {
+        List<Object> filteredList = new ArrayList<>();
 
-        for (String date : c) {
-            if (b.containsKey(date)) {
-                matchedObjects.add(b.get(date));
+        for (String date : desiredDays) {
+            if (forecastMap.containsKey(date)) {
+                filteredList.add(forecastMap.get(date));
             }
         }
-        return matchedObjects;
+        return filteredList;
     }
 }
