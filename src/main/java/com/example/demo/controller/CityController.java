@@ -29,7 +29,7 @@ public class CityController {
         } catch (InvalidApiResponseException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(String.format("Unknown city name '%s'.", dto.getName()));
         }
-        return ResponseEntity.status(HttpStatus.CREATED).body(String.format("City '%s' has been registered with success.", dto.getName()));
+        return ResponseEntity.status(HttpStatus.CREATED).body(String.format("City '%s' has been registered with success!", dto.getName()));
     }
 
     @GetMapping("/list")

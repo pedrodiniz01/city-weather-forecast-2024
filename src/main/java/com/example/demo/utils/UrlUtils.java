@@ -10,6 +10,7 @@ public class UrlUtils {
                 + "?" + LATITUDE_PARAM + latitude
                 + LONGITUDE_PARAM + longitude
                 + API_KEY_PARAM + CITY_FORECAST_API_KEY
+                + UNITS_PARAM
                 + EXCLUDE_PARAM;
     }
 

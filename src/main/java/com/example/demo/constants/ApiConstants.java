@@ -14,7 +14,7 @@ public class ApiConstants {
     public static final String LATITUDE_PARAM = "lat=";
     public static final String LONGITUDE_PARAM = "&lon=";
     public static final String API_KEY_PARAM = "&appid=";
-    public static final String TIMESTAMP_PARAM = "&date=";
     public static final String EXCLUDE_PARAM = "&exclude=minutely,hourly,current,alerts";
+    public static final String UNITS_PARAM = "&units=metric";
     public static final String CITY_NAME_PARAM = "?q=";
 }
