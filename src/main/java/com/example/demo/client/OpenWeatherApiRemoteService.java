@@ -3,7 +3,6 @@ package com.example.demo.client;
 import com.example.demo.dtos.response.CityForecastDto;
 import com.example.demo.dtos.response.CityInfoDto;
 import com.example.demo.exceptions.InvalidApiResponseException;
-import com.example.demo.utils.UrlUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 

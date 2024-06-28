@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 import static com.example.demo.utils.DateUtils.createMapWithDateAsKey;
-import static com.example.demo.utils.DateUtils.getNextDays;
+import static com.example.demo.utils.DateUtils.getDesiredDays;
 import static com.example.demo.utils.ValidationUtils.validateApiResponseList;
 
 @Service
@@ -83,7 +83,7 @@ public class CityService {
 
         // Create map and list of forecast dates in order to obtain desired days
         Map dailyForecastMap = createMapWithDateAsKey(dailyForecastDateList);
-        List<String> desiredDays = getNextDays(days);
+        List<String> desiredDays = getDesiredDays(days);
 
         return matchDesiredDaysWithForecastMap(dailyForecastMap, desiredDays);
     }

@@ -17,7 +17,7 @@ public class DateUtils {
         return dateFormat.format(date);
     }
 
-    public static List<String> getNextDays(int days) {
+    public static List<String> getDesiredDays(int days) {
         List<String> dates = new ArrayList<>();
         LocalDate currentDate = LocalDate.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");

@@ -1,19 +1,15 @@
 package com.example.demo.controller;
 
 import com.example.demo.client.OpenWeatherApiRemoteService;
-import com.example.demo.data.City;
 import com.example.demo.dtos.request.RegisterCityDto;
 import com.example.demo.exceptions.CityAlreadyRegisteredException;
 import com.example.demo.exceptions.CityNotFoundException;
 import com.example.demo.exceptions.InvalidApiResponseException;
-import com.example.demo.mapper.CityMapper;
 import com.example.demo.service.CityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/cities")
@@ -48,7 +44,7 @@ public class CityController {
         } catch (CityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("City '" + cityName + "' not found.");
         } catch (InvalidApiResponseException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error fetching forecast for city '" + cityName + "'.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error.");
         }
     }
 }
