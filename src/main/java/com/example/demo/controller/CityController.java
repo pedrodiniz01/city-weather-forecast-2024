@@ -18,7 +18,7 @@ public class CityController {
     private CityService cityService;
 
     @Autowired
-    OpenWeatherApiRemoteService openWeatherApiRemoteService;
+    private OpenWeatherApiRemoteService openWeatherApiRemoteService;
 
     @PostMapping("/register")
     public ResponseEntity<?> registerCity(@RequestBody RegisterCityDto dto) {

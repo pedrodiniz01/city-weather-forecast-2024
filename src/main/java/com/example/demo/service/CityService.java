@@ -29,7 +29,7 @@ public class CityService {
     private CityMapper cityMapper;
 
     @Autowired
-    OpenWeatherApiRemoteService openWeatherApiRemoteService;
+    private OpenWeatherApiRemoteService openWeatherApiRemoteService;
 
     public City registerCity(String cityName) {
         // Validate if city name is already registered
