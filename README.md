@@ -33,7 +33,7 @@ You have two methods to run the application:
 
 The application runs on port 8080. Access the database via http://localhost:8080/h2-console using the credentials specified in the application properties file.
 
-Additionally, there is a Postman collection within the application containing the requests and payloads that can be used.
+Additionally, there is a **Postman collection** within the application containing the requests and payloads that can be used.
 
 ## 4. Endpoints
 
